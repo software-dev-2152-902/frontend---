@@ -95,7 +95,7 @@ export default function IoTMonitoring() {
 
     return (
         <div>
-            <h1 className="text-2xl font-semibold text-gray-900">IoT Monitoring</h1>
+            
 
             <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
                 {latestData && (
