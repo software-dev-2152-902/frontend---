@@ -28,7 +28,6 @@ export default function Button({
             whileTap={{ scale: 0.98 }}
             whileHover={{ scale: 1.02 }}
         >
-            {/* Subtle animated gradient overlay for primary and danger buttons */}
             {(variant === 'primary' || variant === 'danger') && (
                 <span className="absolute inset-0 overflow-hidden rounded-lg -z-10">
                     <span className="absolute inset-0 rounded-lg opacity-20 bg-[radial-gradient(circle_at_30%_40%,white,transparent)]" />
