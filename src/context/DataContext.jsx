@@ -20,15 +20,12 @@ export function DataProvider({ children }) {
     const [orders, setOrders] = useState({ buy: [], sell: [] });
     const [dataInitialized, setDataInitialized] = useState(false);
 
-    // Initialize all data once when the app starts
     useEffect(() => {
         if (dataInitialized) return;
 
-        // Initialize sensor data
         const initialSensorData = generateHistoricalSensorData(20);
         setSensorData(initialSensorData);
 
-        // Initialize price data
         const initialPriceHistory = generatePriceHistory(20);
         setPriceHistory(initialPriceHistory);
         setCurrentPrice(initialPriceHistory[initialPriceHistory.length - 1].price);
@@ -36,7 +33,6 @@ export function DataProvider({ children }) {
         const priceChangeValue = ((initialPriceHistory[initialPriceHistory.length - 1].price - prevPrice) / prevPrice * 100).toFixed(2);
         setPriceChange(parseFloat(priceChangeValue));
 
-        // Initialize market data
         setOrders(generateMarketOrders());
         setTransactions(generateTransactions(5));
         setBalance(1250.75);
@@ -44,30 +40,24 @@ export function DataProvider({ children }) {
         setDataInitialized(true);
     }, [dataInitialized]);
 
-    // Update sensor data periodically
     useEffect(() => {
         if (!dataInitialized) return;
 
         const sensorInterval = setInterval(() => {
             const newData = generateSensorData();
             setSensorData(prev => [...prev.slice(1), newData]);
-        }, 10000); // Update every 10 seconds for realistic environmental changes
-        
+        }, 10000);  
         return () => clearInterval(sensorInterval);
     }, [dataInitialized]);
 
-    // Update cryptocurrency price data with reduced frequency for more stability
     useEffect(() => {
         if (!dataInitialized) return;
 
         const priceInterval = setInterval(() => {
-            // Get next price using improved algorithm
             const nextPrice = getNextCryptoPrice();
             
-            // Update price history
             setPriceHistory(prev => {
                 if (!prev || prev.length === 0) {
-                    // Handle unexpected empty state by creating new price history
                     const newHistory = generatePriceHistory(20);
                     return newHistory;
                 }
@@ -78,15 +68,12 @@ export function DataProvider({ children }) {
                     price: nextPrice
                 }];
                 
-                // Update price change percentage with safety checks
                 try {
-                    // Protect against division by zero or NaN
                     if (prevPrice && prevPrice !== 0 && !isNaN(prevPrice) && !isNaN(nextPrice)) {
                         const newPriceChange = ((nextPrice - prevPrice) / prevPrice * 100).toFixed(2);
                         setCurrentPrice(nextPrice);
                         setPriceChange(parseFloat(newPriceChange) || 0);
                     } else {
-                        // If we encounter a problem, set a neutral price change
                         setCurrentPrice(nextPrice);
                         setPriceChange(0);
                     }
@@ -99,17 +86,15 @@ export function DataProvider({ children }) {
                 return newHistory;
             });
             
-            // Less frequent order book updates
             if (Math.random() > 0.95) {
                 setOrders(generateMarketOrders());
             }
             
-            // Less frequent transaction updates
             if (Math.random() > 0.98) {
                 const newTransaction = generateTransactions(1)[0];
                 setTransactions(prev => [newTransaction, ...prev.slice(0, 4)]);
             }
-        }, 1500); // Slower updates for more stability (1.5 seconds instead of 800ms)
+        }, 1500); 
         
         return () => clearInterval(priceInterval);
     }, [dataInitialized]);
