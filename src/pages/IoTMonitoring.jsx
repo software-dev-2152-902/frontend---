@@ -14,10 +14,8 @@ export default function IoTMonitoring() {
     const [latestData, setLatestData] = useState(null);
     const [activeTab, setActiveTab] = useState('realtime');
 
-    // Use useMemo to prevent unnecessary recalculations
     const memoizedSensorData = useMemo(() => sensorData, [sensorData]);
     
-    // Use useCallback for the trend calculation to prevent unnecessary function recreations
     const calculateTrend = useCallback((current, previous, key) => {
         if (!previous) return 0;
         return ((current[key] - previous[key]) / previous[key] * 100).toFixed(1);
@@ -29,10 +27,8 @@ export default function IoTMonitoring() {
         }
     }, [dataInitialized, memoizedSensorData]);
 
-    // Memoize the SensorChart component to prevent recreating it on every render
     const SensorChart = useMemo(() => {
         return ({ data, dataKey, color, title, gradientStart, gradientEnd, icon: Icon }) => {
-            // Create a unique ID for the gradient that remains stable
             const gradientId = `gradient-${dataKey}`;
             
             return (
@@ -65,7 +61,6 @@ export default function IoTMonitoring() {
                             </div>
                         </div>
                         <div className="h-72">
-                            {/* Use a key based on data length to prevent unnecessary re-renders */}
                             <ResponsiveContainer width="100%" height="100%" debounce={1} key={`container-${dataKey}`}>
                                 <AreaChart
                                     data={data}
@@ -122,9 +117,8 @@ export default function IoTMonitoring() {
                 </AnimatedCard>
             );
         };
-    }, [activeTab]); // Only recreate when activeTab changes
+    }, [activeTab]); 
     
-    // Memoize these objects to prevent recreation on every render
     const sensorIcons = useMemo(() => ({
         soilMoisture: BeakerIcon,
         temperature: FireIcon,
@@ -139,7 +133,6 @@ export default function IoTMonitoring() {
         lightIntensity: { color: '#d97706', start: 'yellow', end: 'amber' }
     }), []);
 
-    // Don't render until data is initialized
     if (!dataInitialized || !memoizedSensorData || memoizedSensorData.length === 0) {
         return (
             <PageBackground variant="neutral">
@@ -209,7 +202,6 @@ export default function IoTMonitoring() {
                 </AnimatedStaggerWrapper>
 
                 <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-                    {/* Use a stable key for each chart to prevent re-renders */}
                     <SensorChart
                         key="soilMoisture-chart"
                         data={memoizedSensorData}

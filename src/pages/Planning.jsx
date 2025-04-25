@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { aiAPI } from '../services/api';
 import { MapPinIcon, ChartBarIcon, CloudIcon, ArrowTrendingUpIcon } from '@heroicons/react/24/outline';
 
 export default function Planning() {
@@ -12,19 +11,105 @@ export default function Planning() {
         soilType: 'loam'
     });
 
-    const handleSubmit = async (e) => {
+    // Mock plan generator function
+    const generateMockPlan = (data) => {
+        // Calculate values based on form inputs to make it somewhat dynamic
+        const landSize = parseFloat(data.landSize) || 5;
+        const treeQuantity = Math.round(landSize * 250);
+        const carbonSequestration = Math.round(treeQuantity * 22);
+        
+        // Adjust values based on region and soil type
+        const regionMultiplier = {
+            'tropical': 1.2,
+            'temperate': 1.0,
+            'arid': 0.7
+        }[data.region];
+        
+        const soilMultiplier = {
+            'loam': 1.2,
+            'clay': 0.9,
+            'sandy': 0.8,
+            'silty': 1.0
+        }[data.soilType];
+        
+        // Calculate sustainability score
+        const baseScore = 75;
+        const sustainabilityScore = Math.min(98, Math.round(baseScore * regionMultiplier * soilMultiplier));
+        
+        return {
+            plantingPlan: {
+                trees: {
+                    quantity: Math.round(treeQuantity * regionMultiplier * soilMultiplier),
+                    spacing: `${3 + Math.round(Math.random() * 2)}m x ${3 + Math.round(Math.random() * 2)}m`,
+                    species: [
+                        {
+                            name: data.region === 'tropical' ? 'Teak' : (data.region === 'temperate' ? 'Oak' : 'Acacia'),
+                            quantity: Math.round(treeQuantity * 0.4)
+                        },
+                        {
+                            name: data.region === 'tropical' ? 'Mahogany' : (data.region === 'temperate' ? 'Pine' : 'Eucalyptus'),
+                            quantity: Math.round(treeQuantity * 0.3)
+                        },
+                        {
+                            name: data.region === 'tropical' ? 'Bamboo' : (data.region === 'temperate' ? 'Maple' : 'Mesquite'),
+                            quantity: Math.round(treeQuantity * 0.2)
+                        },
+                        {
+                            name: 'Native Species Mix',
+                            quantity: Math.round(treeQuantity * 0.1)
+                        }
+                    ]
+                },
+                crops: {
+                    area: `${Math.round(landSize * 0.7 * 10) / 10} hectares`,
+                    rotation: [
+                        {
+                            name: data.region === 'tropical' ? 'Rice' : (data.region === 'temperate' ? 'Wheat' : 'Millet'),
+                            season: 'Spring'
+                        },
+                        {
+                            name: data.region === 'tropical' ? 'Maize' : (data.region === 'temperate' ? 'Corn' : 'Sorghum'),
+                            season: 'Summer'
+                        },
+                        {
+                            name: data.region === 'tropical' ? 'Beans' : (data.region === 'temperate' ? 'Soybean' : 'Chickpea'),
+                            season: 'Fall'
+                        },
+                        {
+                            name: 'Cover Crop Mix',
+                            season: 'Winter'
+                        }
+                    ]
+                }
+            },
+            estimatedCarbonSequestration: carbonSequestration,
+            sustainabilityScore: sustainabilityScore
+        };
+    };
+
+    const handleSubmit = (e) => {
         e.preventDefault();
-        try {
-            setIsLoading(true);
-            setError(null);
-            const response = await aiAPI.getPlan(formData);
-            setPlan(response.data);
-        } catch (err) {
-            setError('Failed to generate plan. Please try again.');
-            console.error(err);
-        } finally {
-            setIsLoading(false);
+        // Validate form data
+        if (!formData.landSize || parseFloat(formData.landSize) <= 0) {
+            setError('Please enter a valid land size');
+            return;
         }
+        
+        setIsLoading(true);
+        setError(null);
+        
+        // Simulate API delay
+        setTimeout(() => {
+            try {
+                const mockPlan = generateMockPlan(formData);
+                setPlan(mockPlan);
+                setIsLoading(false);
+            } catch (err) {
+                setError('Failed to generate plan. Please try again.');
+                console.error(err);
+                setIsLoading(false);
+            }
+        }, 1500); // 1.5 second delay to simulate API call
     };
 
     return (
