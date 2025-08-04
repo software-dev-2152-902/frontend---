@@ -302,7 +302,7 @@ export default function Planning() {
                             <MapPinIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                             <h3 className="text-lg font-medium text-gray-900 mb-2">No Plan Generated Yet</h3>
                             <p className="text-gray-500">
-                                Fill out the form with your land details to get started with an AI-generated planting plan.
+                                Fill out the form with your land details to get started with an AI-generated planting plan!
                             </p>
                         </div>
                     )}
